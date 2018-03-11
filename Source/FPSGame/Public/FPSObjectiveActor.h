@@ -6,9 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "FPSObjectiveActor.generated.h"
 
-class UStaticMeshComponent;
 class USphereComponent;
-class UParticleSystem;
 
 UCLASS()
 class FPSGAME_API AFPSObjectiveActor : public AActor
@@ -35,9 +33,6 @@ protected:
 	void PlayEffect();
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	
 };
