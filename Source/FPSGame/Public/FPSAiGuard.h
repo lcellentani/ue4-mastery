@@ -18,8 +18,14 @@ public:
 	AFPSAiGuard();
 
 protected:
+	FRotator OriginalRotation;
+	FTimerHandle TimerHandle_ResetOrientation;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void ResetOrientation();
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UPawnSensingComponent* PawnSensingComp;

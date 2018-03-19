@@ -36,7 +36,7 @@ void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent * OverlappedComponent
 	if (myCharacter->bIsCarryObjective) {
 		AFPSGameMode* gameMode = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
 		if (gameMode) {
-			gameMode->CompleteMission(myCharacter);
+			gameMode->CompleteMission(myCharacter, true);
 		}
 	} else {
 		UGameplayStatics::PlaySound2D(this, ObjectiveMissingSound);
