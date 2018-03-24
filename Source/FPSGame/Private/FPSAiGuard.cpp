@@ -15,6 +15,8 @@ AFPSAiGuard::AFPSAiGuard()
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AFPSAiGuard::OnPawnSeen);
 	PawnSensingComp->OnHearNoise.AddDynamic(this, &AFPSAiGuard::OnNoiseHeard);
+
+	GuardState = EAIState::Idle;
 }
 
 // Called when the game starts or when spawned
@@ -27,7 +29,13 @@ void AFPSAiGuard::BeginPlay()
 
 void AFPSAiGuard::ResetOrientation()
 {
+	if (GuardState == EAIState::Alerted) {
+		return;
+	}
+
 	SetActorRotation(OriginalRotation);
+
+	SetGuardState(EAIState::Idle);
 }
 
 void AFPSAiGuard::OnPawnSeen(APawn* Pawn)
@@ -42,10 +50,16 @@ void AFPSAiGuard::OnPawnSeen(APawn* Pawn)
 	if (gameMode) {
 		gameMode->CompleteMission(Pawn, false);
 	}
+
+	SetGuardState(EAIState::Alerted);
 }
 
 void AFPSAiGuard::OnNoiseHeard(APawn * Pawn, const FVector & Location, float Volume)
 {
+	if (GuardState == EAIState::Alerted) {
+		return;
+	}
+
 	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Green, false, 10.0f);
 
 	FVector Direction = Location - GetActorLocation();
@@ -58,6 +72,19 @@ void AFPSAiGuard::OnNoiseHeard(APawn * Pawn, const FVector & Location, float Vol
 
 	GetWorldTimerManager().ClearTimer(TimerHandle_ResetOrientation);
 	GetWorldTimerManager().SetTimer(TimerHandle_ResetOrientation, this, &AFPSAiGuard::ResetOrientation, 3.0f);
+
+	SetGuardState(EAIState::Suspicious);
+}
+
+void AFPSAiGuard::SetGuardState(EAIState NewState)
+{
+	if (GuardState == NewState) {
+		return;
+	}
+
+	GuardState = NewState;
+
+	OnStateChange(GuardState);
 }
 
 // Called every frame
